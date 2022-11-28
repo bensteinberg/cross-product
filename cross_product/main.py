@@ -3,7 +3,7 @@ import re
 import sys
 from pathlib import Path
 from itertools import cycle
-from cross_product.catalog import get_work
+from cross_product.catalog import get_catalog, get_work
 
 
 @click.command()
@@ -15,15 +15,19 @@ def cross(factors, cache):
     Squash books together; arguments ("factors") are either
     filenames or Project Gutenberg numbers.
     """
-    if len(factors) < 2:
+    text_nos = [row['Text#'] for row in get_catalog(cache)]
+    works = []
+    for f in factors:
+        if Path(f'{cache}/{f}').is_file():
+            works.append(open(f'{cache}/{f}', 'r').read())
+        elif f in text_nos:
+            works.append(get_work(f, cache))
+        else:
+            click.echo(f'{f} is neither a file nor a PG text ID.', err=True)
+
+    if len(works) < 2:
         click.echo('You must specify two or more works.', err=True)
         sys.exit()
-
-    works = [
-        open(f'{cache}/{f}', 'r').read() if Path(f'{cache}/{f}').is_file()
-        else get_work(f, cache)
-        for f in factors
-    ]
 
     # regex for splitting sentences from https://stackoverflow.com/a/43075629
     texts = [re.split("(?<=[.!?])\s+",  # noqa
@@ -35,7 +39,7 @@ def cross(factors, cache):
 
     # roughly skip frontmatter and endmatter
     for i in range(350, len(texts[0]) - 200):
-        j = cycle(range(len(factors)))
+        j = cycle(range(len(works)))
         wordss = [t[i].split(" ") for t in texts]
         sentence = ' '.join([word[next(j)]
                              for word
