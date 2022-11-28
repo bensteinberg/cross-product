@@ -20,6 +20,10 @@ poetry install
 poetry run cross <text1> <text2> <etc> > output.txt
 ```
 
+By default, the program will look for input files in the `pg_cache/`
+directory. You can also supply Project Gutenberg text numbers; the
+metadata files and text files will be cached in the same location.
+
 Example
 -------
 

@@ -1,26 +1,34 @@
 import click
 import re
 import sys
+from pathlib import Path
 from itertools import cycle
+from cross_product.catalog import get_work
 
 
 @click.command()
-@click.argument('factors', type=click.File('r'), nargs=-1)
-def cross(factors):
-    """ Squash books together """
-    error = None
-    if len(factors) == 0:
-        error = 'You must specify one or more files'
-    elif len(factors) == 1:
-        error = 'Output is the same as input'
-    if error:
-        click.echo(error, err=True)
+@click.argument('factors', nargs=-1)
+@click.option('--cache', default='pg_cache', help='Cache directory',
+              show_default=True)
+def cross(factors, cache):
+    """
+    Squash books together; arguments ("factors") are either
+    filenames or Project Gutenberg numbers.
+    """
+    if len(factors) < 2:
+        click.echo('You must specify two or more works.', err=True)
         sys.exit()
+
+    works = [
+        open(f'{cache}/{f}', 'r').read() if Path(f'{cache}/{f}').is_file()
+        else get_work(f, cache)
+        for f in factors
+    ]
 
     # regex for splitting sentences from https://stackoverflow.com/a/43075629
     texts = [re.split("(?<=[.!?])\s+",  # noqa
-                      f.read().replace("\n", " "))
-             for f in factors]
+                      w.replace("\n", " "))
+             for w in works]
 
     # make the shortest input the first
     texts.sort(key=len)
