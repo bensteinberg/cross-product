@@ -34,3 +34,9 @@ _[Middlemarch](https://gutenberg.org/ebooks/145)_, each obtained from Project Gu
 ```
 poetry run cross 2701-0.txt 6593-0.txt pg145.txt > moby-jones-march.txt
 ```
+
+[Another sample output](war-crime-karenina.txt) was produced by squashing _[War and Peace](https://gutenberg.org/ebooks/2600)_, _[Crime and Punishment](https://gutenberg.org/ebooks/2554)_, and _[Anna Karenina](https://gutenberg.org/ebooks/1399)_:
+
+```
+poetry run cross 2600 2554 1399 > war-crime-karenina.txt
+```
