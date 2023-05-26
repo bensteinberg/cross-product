@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cross-product"
-version = "0.1.2"
+version = "0.1.3"
 description = "An entry for NaNoGenMo 2022"
 authors = ["Ben Steinberg"]
 readme = "README.md"
